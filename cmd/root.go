@@ -40,10 +40,10 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Door_System_User_Automation.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&WisFile, "wis", "w", "", "Path to WIS file (CSV)")
-	rootCmd.PersistentFlags().StringVarP(&S2File, "s2", "s", "", "Path to S2 file (CSV)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("help", "h", false, "Help message for help")
+	rootCmd.Flags().StringVarP(&WisFile, "wis", "w", "", "Path to WIS file (CSV)")
+	rootCmd.Flags().StringVarP(&S2File, "s2", "s", "", "Path to S2 file (CSV)")
 }
