@@ -2,4 +2,5 @@ bin/
 
 resources/*.txt
 resources/*.csv
+output/*.csv
 output.csv

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"Door_System_User_Automation/cmd"
+	"os"
 	"regexp"
 	"strings"
 
@@ -93,6 +94,7 @@ func formatPhoneNumber(df *dataframe.DataFrame) {
 	}
 }
 
+// TODO: Drop Rows with NoCommand for their COMMAND
 // MergeAndExport: Rather than using the Merge() method, we will iterate over all of the values, checking to see if the PERSONID's match
 // if the PERSONID's match, then we will update information using that index
 func MergeAndExport(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
@@ -114,7 +116,7 @@ func MergeAndExport(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
 	bdEnabled, _ := result.SelectCol("BLUEDIAMONDENABLED")
 	bdStatus, _ := result.SelectCol("BLUEDIAMONDSTATUS")
 	mcRequest, _ := result.SelectCol("MOBILECREDENTIALREQUEST")
-	mcRequestStatus, _ := result.SelectCol("MOBILECREDENTIALREQUESTSTATUS")
+	//mcRequestStatus, _ := result.SelectCol("MOBILECREDENTIALREQUESTSTATUS")
 
 	for i := 0; i < bdEnabled.Len(); i++ {
 		phoneNumber, _ := result.ILoc().At(i, 15)
@@ -125,12 +127,21 @@ func MergeAndExport(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
 			_ = command.Set(i, ModPerson)
 			_ = bdEnabled.Set(i, "TRUE")
 			_ = bdStatus.Set(i, BlueDiamondStatus)
-			_ = mcRequest.Set(i, NFCBundle)
-			_ = mcRequestStatus.Set(i, NFCRequestStatus)
+
 		}
 	}
 
-	_, err := result.ToCSV("output.csv")
+	os.Mkdir("output", 0755)
+	_, err := result.ToCSV("output/import_first.csv")
+	if err != nil {
+		return
+	}
+
+	for i := 0; i < command.Len(); i++ {
+		_ = mcRequest.Set(i, NFCBundle)
+	}
+
+	_, err = result.ToCSV("output/import_second.csv")
 	if err != nil {
 		return
 	}
