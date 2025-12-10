@@ -1,0 +1,2 @@
+docker compose run --rm go-app ./goapp mobile -w resources/StudentWorkList.csv -s resources/people.csv
+docker compose run --rm go-app ./goapp gender -w resources/StudentWorkList.csv -s resources/people.csv

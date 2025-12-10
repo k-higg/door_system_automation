@@ -30,7 +30,6 @@ func MergeGender(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
 	gender, _ := result.SelectCol("UDF4")
 
 	for i := 0; i < command.Len(); i++ {
-		// TODO: edit current access levels based on gender
 		_ = command.Set(i, CommandArr[2])
 		g, err := gender.At(i)
 		if err != nil {
