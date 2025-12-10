@@ -32,7 +32,7 @@ var mobileCmd = &cobra.Command{
 		utils.Normalize(wisDF)
 		s2DF := utils.CreateDataFrame(S2File)
 
-		utils.MergeAndExport(s2DF, wisDF)
+		utils.MergeMobile(s2DF, wisDF)
 	},
 }
 
@@ -44,9 +44,11 @@ var genderCmd = &cobra.Command{
 		Females will get access to a different specified building for laundry access.
 		Outputs one file to be imported to S2.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//wisDF := utils.CreateDataFrame(WisFile)
-		//s2DF := utils.CreateDataFrame(S2File)
+		wisDF := utils.CreateDataFrame(WisFile)
+		utils.Normalize(wisDF)
+		s2DF := utils.CreateDataFrame(S2File)
 
+		utils.MergeGender(s2DF, wisDF)
 	},
 }
 
