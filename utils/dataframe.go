@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"Door_System_User_Automation/cmd"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -25,24 +25,29 @@ func CreateDataFrame(path string) *dataframe.DataFrame {
 		panic(err)
 	}
 
-	if path == cmd.WisFile {
-		Normalize(df)
-	}
-
 	return df
 }
 
 // Normalize: used to normalize the headers so they match what is required to import to S2
 func Normalize(df *dataframe.DataFrame) {
 	err := df.Rename(map[string]string{
-		"User ID":        "PERSONID",
-		"Email":          "EMAIL_SRC",
-		"Wireless phone": "MOBILEPHONE_SRC",
+		"User ID":                   "PERSONID",
+		"Email":                     "EMAIL_SRC",
+		"Wireless phone":            "MOBILEPHONE_SRC",
+		"Last name":                 "LASTNAME_SRC",
+		"Preferred else First name": "FIRSTNAME_SRC",
 	})
+
 	if err != nil {
-		panic(err)
+		fmt.Println("Error: tried to Rename column headers that don't exist in the provided file..")
 	}
-	formatPhoneNumber(df)
+
+	_, err = df.SelectCol("MOBILEPHONE_SRC")
+	if err != nil {
+		fmt.Println("Error: could not find MOBILEPHONE_SRC column..")
+	} else {
+		formatPhoneNumber(df)
+	}
 }
 
 func sanitizePhoneNumber(number string) string {
@@ -100,7 +105,6 @@ func formatPhoneNumber(df *dataframe.DataFrame) {
 func MergeAndExport(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
 	const BlueDiamondStatus = "PENDING"
 	const NFCBundle = "{Winchendon School NFC Bundle~20}"
-	const NFCRequestStatus = "{Winchendon School NFC Bundle~Awaiting_REG}"
 	const AddPerson = "AddPerson"
 	const ModPerson = "ModifyPerson"
 	const NoCommand = "NoCommand"
@@ -113,10 +117,13 @@ func MergeAndExport(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
 	})
 
 	command, _ := result.SelectCol("COMMAND")
-	bdEnabled, _ := result.SelectCol("BLUEDIAMONDENABLED")
+	bdEnabled, err := result.SelectCol("BLUEDIAMONDENABLED")
 	bdStatus, _ := result.SelectCol("BLUEDIAMONDSTATUS")
 	mcRequest, _ := result.SelectCol("MOBILECREDENTIALREQUEST")
-	//mcRequestStatus, _ := result.SelectCol("MOBILECREDENTIALREQUESTSTATUS")
+
+	if err != nil {
+		return
+	}
 
 	for i := 0; i < bdEnabled.Len(); i++ {
 		phoneNumber, _ := result.ILoc().At(i, 15)
@@ -132,7 +139,7 @@ func MergeAndExport(s2DF *dataframe.DataFrame, wisDF *dataframe.DataFrame) {
 	}
 
 	os.Mkdir("output", 0755)
-	_, err := result.ToCSV("output/import_first.csv")
+	_, err = result.ToCSV("output/import_first.csv")
 	if err != nil {
 		return
 	}

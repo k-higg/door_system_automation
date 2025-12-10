@@ -4,6 +4,7 @@ Copyright © 2025 Kenny
 package cmd
 
 import (
+	"Door_System_User_Automation/utils"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -19,6 +20,34 @@ missing or is incorrect.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//Run: func(cmd *cobra.Command, args []string) { },
+}
+
+var mobileCmd = &cobra.Command{
+	Use:   "mobile",
+	Short: "Add user's mobile number and email, and then enable mobile credentials",
+	Long: `Add user's mobile number and email, and then enable mobile credentials. 
+		Outputs two csvs that ned to be imported in the correct order so S2 can properly enable the credentials.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		wisDF := utils.CreateDataFrame(WisFile)
+		utils.Normalize(wisDF)
+		s2DF := utils.CreateDataFrame(S2File)
+
+		utils.MergeAndExport(s2DF, wisDF)
+	},
+}
+
+var genderCmd = &cobra.Command{
+	Use:   "gender",
+	Short: "Add user's gender and updates their access levels based on that",
+	Long: `Add user's gender and updates their access levels based on that... 
+		Males will get access to a specified building for laundry access, 
+		Females will get access to a different specified building for laundry access.
+		Outputs one file to be imported to S2.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		//wisDF := utils.CreateDataFrame(WisFile)
+		//s2DF := utils.CreateDataFrame(S2File)
+
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -38,12 +67,17 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-
+	rootCmd.AddCommand(mobileCmd)
+	rootCmd.AddCommand(genderCmd)
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Door_System_User_Automation.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("help", "h", false, "Help message for help")
-	rootCmd.Flags().StringVarP(&WisFile, "wis", "w", "", "Path to WIS file (CSV)")
-	rootCmd.Flags().StringVarP(&S2File, "s2", "s", "", "Path to S2 file (CSV)")
+
+	mobileCmd.Flags().StringVarP(&WisFile, "wis", "w", "", "Path to WIS file (CSV)")
+	mobileCmd.Flags().StringVarP(&S2File, "s2", "s", "", "Path to S2 file (CSV)")
+
+	genderCmd.Flags().StringVarP(&WisFile, "wis", "w", "", "Path to WIS file (CSV)")
+	genderCmd.Flags().StringVarP(&S2File, "s2", "s", "", "Path to S2 file (CSV)")
 }

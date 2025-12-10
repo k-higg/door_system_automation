@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/dimchansky/utfbom" // You'll still need this for robust stripping
+	"github.com/dimchansky/utfbom"
 )
 
 // The UTF-8 BOM byte sequence
