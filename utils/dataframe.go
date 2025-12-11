@@ -24,12 +24,10 @@ func CreateDataFrame(path string) *dataframe.DataFrame {
 	return df
 }
 
-// Normalize: used to normalize the headers so they match what is required to import to S2
-func Normalize(df *dataframe.DataFrame) {
+// NormalizeUID: used to normalize the headers so they match what is required to import to S2
+func NormalizeUID(df *dataframe.DataFrame) {
 	err := df.Rename(map[string]string{
-		"User ID":                   "PERSONID",
-		"Last name":                 "LASTNAME_SRC",
-		"Preferred else First name": "FIRSTNAME_SRC",
+		"User ID": "PERSONID",
 	})
 
 	if err != nil {

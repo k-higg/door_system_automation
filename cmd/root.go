@@ -29,7 +29,7 @@ var mobileCmd = &cobra.Command{
 		Outputs two csvs that ned to be imported in the correct order so S2 can properly enable the credentials.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		wisDF := utils.CreateDataFrame(WisFile)
-		utils.Normalize(wisDF)
+		utils.NormalizeUID(wisDF)
 		s2DF := utils.CreateDataFrame(S2File)
 
 		utils.MergeMobile(s2DF, wisDF)
@@ -45,7 +45,7 @@ var genderCmd = &cobra.Command{
 		Outputs one file to be imported to S2.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		wisDF := utils.CreateDataFrame(WisFile)
-		utils.Normalize(wisDF)
+		utils.NormalizeUID(wisDF)
 		s2DF := utils.CreateDataFrame(S2File)
 
 		utils.MergeGender(s2DF, wisDF)
