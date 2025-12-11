@@ -33,20 +33,31 @@ func NormalizeUID(df *dataframe.DataFrame) {
 	if err != nil {
 		fmt.Println("Error: tried to Rename column headers that don't exist in the provided file..")
 	}
-
 }
 
 // FormatWisDF: used to format WisDF when using the mobile flag
+// sets entire row to null if no phonenumber is present, this will cause the row to drop when merging
 func FormatWisDF(df *dataframe.DataFrame) {
 	_ = df.Rename(map[string]string{
-		"Email":          "EMAIL_SRC",
-		"Wireless phone": "MOBILEPHONE_SRC",
+		"Email":          "EMAIL",
+		"Wireless phone": "MOBILEPHONE",
 	})
 
-	_, err := df.SelectCol("MOBILEPHONE_SRC")
+	phoneNumberCol, err := df.SelectCol("MOBILEPHONE")
 	if err != nil {
-		fmt.Println("Error: could not find MOBILEPHONE_SRC column..")
-	} else {
-		FormatPhoneNumber(df)
+		fmt.Println("Error: could not find MOBILEPHONE column..")
 	}
+	for i := 0; i < phoneNumberCol.Len(); i++ {
+		phoneNumber, _ := phoneNumberCol.At(i)
+		if phoneNumber == "" {
+			for j := 0; j < len(df.Columns); j++ {
+				col, _ := df.ILoc().Col(j)
+				err := col.Set(i, nil)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+	}
+	FormatPhoneNumber(df)
 }

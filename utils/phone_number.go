@@ -32,7 +32,7 @@ func sanitizePhoneNumber(number string) string {
 }
 
 func FormatPhoneNumber(df *dataframe.DataFrame) {
-	series, err := df.SelectCol("MOBILEPHONE_SRC")
+	series, err := df.SelectCol("MOBILEPHONE")
 	if err != nil {
 		panic(err)
 	}

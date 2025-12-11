@@ -4,6 +4,7 @@ Copyright © 2025 Kenny
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"Door_System_User_Automation/cmd"
@@ -14,6 +15,6 @@ func main() {
 
 	err := os.RemoveAll("temp")
 	if err != nil {
-		panic(err)
+		fmt.Println("Error removing temp folder..")
 	}
 }
